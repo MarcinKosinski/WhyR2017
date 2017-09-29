@@ -1,0 +1,491 @@
+---
+title: "<br><small> [survminer](https://github.com/kassambara/survminer): wykresy analizy przeżycia <br> pełne informacji i elegancji </small>"
+subtitle: "<small> <br>[Marcin Kosinski](http://r-addict.com/About.html) </small>"
+author: "<small><a href='https://r-addict.com'><i class='fa fa-comment'></i></a>&nbsp;&nbsp;<a href='https://stackoverflow.com/users/3857701'><i class='fa fa-stack-overflow'></i></a>&nbsp;&nbsp;<a href='https://github.com/MarcinKosinski'><i class='fa fa-github'></i></a>&nbsp;&nbsp;<a href='mailto:m.p.kosinski@gmail.com'><i class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;</small><br>"
+date: 29 Września, 2017 <br> <a href="http://whyr.pl/">Why R? 2017</a>
+output:
+  revealjs::revealjs_presentation:
+    theme: night
+    highlight: monochrome
+    self_contained: false
+    center: true
+    reveal_options:
+      slideNumber: true
+---
+
+```{r, include=FALSE}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+library(knitr)
+opts_chunk$set(
+	comment = "",
+	fig.width = 12, 
+	message = FALSE,
+	warning = FALSE,
+	tidy.opts = list(
+		keep.blank.line = TRUE,	
+		width.cutoff = 150
+		),
+	options(width = 200),
+	eval = TRUE
+)
+# Sys.setenv(JAVA_HOME='/usr/lib/jvm/java-7-openjdk-amd64')
+```
+
+# O mnie
+
+## O mnie
+
+<a href='https://whyr.pl/'><img src='whyR.jpg' width='200px' height='200px'></a>
+<a href='https://wser.pl/'><img src='wser.jpg' width='400px' height='200px'></a>
+<a href='https://r-addict.com/'><img src='avatar.jpg' width='200px' height='200px'></a>
+
+[whyr.pl](https://whyr.pl/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [wser.pl](https://wser.pl/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [r-addict.com](https://r-addict.com/)
+
+
+# Analiza przeżycia
+
+## Analiza przeżycia
+
+<small>
+
+> Analiza przeżycia to zbiór metod statystycznych badających procesy, w których interesujący jest czas, jaki upłynie do (niekoniecznie pierwszego) wystąpienia pewnego zdarzenia.
+
+Przykłady zdarzeń:
+
+- śmierć pacjenta / nawrót choroby,
+- awaria urządzenia,
+- dezaktywacja usługi (np. telekomunikacyjnej),
+- odejście pracownika z firmy,
+- wypadek na drodze,
+
+Typowe narzędzia analizy przeżycia obejmują:
+
+- estymację funkcji przeżycia (np. estymator Kaplana-Meiera)
+- estymację funkcji skumulowanego hazardu (np. Nelsona–Aalena)
+- modele regresyjne (np. model proporcjonalnego hazardu Coxa) 
+
+
+> polecam: [Estymacja w modelu Coxa metodą stochastycznego spadku gradientu z przykładami zastosowań w analizie danych z The Cancer Genome Atlas](http://mi2.mini.pw.edu.pl:8080/mkosinski/MagisterkaKosinski.pdf)
+
+</small>
+
+
+## Postać danych
+
+<img src='http://what-when-how.com/wp-content/uploads/2011/04/tmp72_thumb1_thumb.png' height='400'>
+<small>
+Źródło: [what-when-how, In Depth Tutorials and Information - SURVIVAL ANALYSIS REGRESSION (Social Science)](http://what-when-how.com/social-sciences/survival-analysis-regression-social-science/)
+</small>
+
+## Jak potraktować takie dane ?
+
+<img src='http://what-when-how.com/wp-content/uploads/2011/04/tmp73_thumb1_thumb.png' height='400'>
+<small>
+Źródło: [what-when-how, In Depth Tutorials and Information - SURVIVAL ANALYSIS REGRESSION (Social Science)](http://what-when-how.com/social-sciences/survival-analysis-regression-social-science/)
+</small>
+
+## [RTCGA](http://rtcga.github.io/RTCGA/)
+
+<small>
+Na jakich danych popracujemy?
+</small>
+```{r}
+library(RTCGA.clinical)
+BRCAOV.survInfo <- survivalTCGA(
+   BRCA.clinical, OV.clinical,
+   extract.cols = "admin.disease_code"
+) 
+head(BRCAOV.survInfo)
+```
+
+## [RTCGA](http://rtcga.github.io/RTCGA/)
+
+<img src='https://raw.githubusercontent.com/RTCGA/RTCGA/master/RTCGA_workflow.png' height='500'>
+
+<small>
+[RTCGA factory of R packages - Quick Guide](http://r-addict.com/2016/05/04/RTCGA-Quick-Guide.html) <br>
+[BioC 2016 Conference Overview and Few Ways of Downloading TCGA Data](http://r-addict.com/2016/07/22/BioC2016-RTCGA.html)
+</small>
+
+# Krzywe przeżycia
+
+## Krzywe przeżycia - konstrukcja
+
+<small>
+Przykład: estymator Kaplana-Meiera
+
+Funkcja przeżycia: $S(t) = P(T > t)$, T - zmienna losowa oznaczająca czas zdarzenia
+</small>
+
+$\hat{S}(t)$ - oszacowanie krzywej/funkji przeżycia w chwili $t$
+
+$$\hat{S}(t) = \prod_{t_i < t} \frac{n_i - d_i}{n_i}$$
+
+<small>
+
+- $t_i$ - czas $i$-tego zdarzenia 
+- $n_i$ - liczba obserwacji w zbiorze ryzyka w chwili $t_i$
+- $d_i$ - liczba zdarzeń (np. awarii) w chwili $t_i$
+
+Zakładamy, że $t_i$ są uporządkowane niemalejąco.
+</small>
+
+
+## Krzywe przeżycia - tabela
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Aml_data_set_sorted_by_survival_time.png" align="left" width='400'>
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Life_table_for_the_aml_data.png" align="right" width='400'>
+
+
+Źródło: [Wikipedia](https://en.wikipedia.org/wiki/Survival_analysis)
+
+## Krzywe przeżycia - wykresy
+
+Podstawowe wykresy - pakiet base
+
+```{r, fig.width=6, fig.height=4}
+library(survival)
+fit <- survfit(
+   Surv(times, patient.vital_status) ~ admin.disease_code,
+   data = BRCAOV.survInfo
+)
+plot(fit) # base
+```
+
+## Krzywe przeżycia
+<small>
+Sprowadzenie do przydatnej formy wymaga nakładu pracy.
+</small>
+```{r, fig.width=6, fig.height=4}
+plot(fit, col = c("orange","purple"),
+     lty = c(1:2), lwd = 3, 
+     conf.int = TRUE, xmax = 2000)
+# add a legend
+legend(100, .3, c("Ovarian Cancer", "Breast Cancer"), 
+       lty = c(1:2), col = c("orange","purple"))
+```
+
+
+# survminer
+
+## survminer
+
+<small>
+Autor: [Alboukadel Kassambara](https://github.com/kassambara), Pobrań: 47 tysięcy, 
+na CRAN od 18-01-2016 
+</small>
+<img src='http://r-addict.com/images/fulls/survminer_orly.png' height='600'>
+
+## survminer
+<small>
+> Gdzie można dowiedzieć się jak pracować z pakietem?
+
+Wpisy na R-Bloggers:
+
+-   M. Kosiński. R-ADDICT January 2017. [Comparing (Fancy) Survival Curves with Weighted Log-rank Tests](http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html)
+-   M. Kosiński. R-ADDICT January 2017. [When You Went too Far with Survival Plots](http://r-addict.com/2017/01/15/Too-Far-With-Survival-Plots.html)
+-   A. Kassambara. STHDA December 2016. [Survival Analysis Basics: Curves and Logrank Tests](http://www.sthda.com/english/wiki/survival-analysis-basics)
+-   A. Kassambara. STHDA December 2016. [Cox Proportional Hazards Model](http://www.sthda.com/english/wiki/cox-proportional-hazards-model)
+-   A. Kassambara. STHDA December 2016. [Cox Model Assumptions](http://www.sthda.com/english/wiki/cox-model-assumptions)
+-   M. Kosiński. R-ADDICT November 2016. [Determine optimal cutpoints for numerical variables in survival plots](http://r-addict.com/2016/11/21/Optimal-Cutpoint-maxstat.html)
+-   M. Kosiński. R-ADDICT May 2016. [Survival plots have never been so informative](http://r-addict.com/2016/05/23/Informative-Survival-Plots.html)
+-   A. Kassambara. STHDA January 2016. [survminer R package: Survival Data Analysis and Visualization](http://www.sthda.com/english/wiki/survminer-r-package-survival-data-analysis-and-visualization).
+
+
+</small>
+
+[Contributed RStudio Cheatsheets - The survminer package](https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/survminer_cheatsheet.pdf) <br>
+(by [Przemyslaw Biecek](https://github.com/pbiecek/). Updated 03/17.)
+
+<small>
+<a href='www.ggplot2-exts.org/gallery/'>www.ggplot2-exts.org/gallery/</a> <br>
+<a href='www.stdha.com/english/rpkgs/survminer'>www.stdha.com/english/rpkgs/survminer</a>
+</small>
+
+## survminer
+
+Podstawowe wywołanie.
+
+```{r}
+library(survminer)
+ggsurvplot(fit)
+```
+
+
+## survminer 
+
+Tabela zbioru ryzyka.
+
+```{r}
+ggsurvplot(fit, risk.table = TRUE)
+```
+
+
+## survminer 
+
+[Testy log-rank (dla 2ch grup)](http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html#log-rank-statistic-for-2-groups)
+
+```{r}
+ggsurvplot(fit, risk.table = TRUE, pval = TRUE)
+```
+
+
+## survminer 
+
+[Ważone testy log-rank (dla dwóch grup)](http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html#weighted-log-rank-extensions)
+
+```{r}
+ggsurvplot(fit, risk.table = TRUE, pval = TRUE,
+           pval.method = TRUE,
+           log.rank.weights = "n")
+```
+
+
+## survminer 
+
+Intensywność cenzurowań
+
+```{r}
+ggsurvplot(fit, ncensor.plot = TRUE)
+```
+
+## survminer
+
+Co jeszcze potrafi? - kod
+```{r}
+ggsurvplot(
+   fit,                     # survfit object with calculated statistics.
+   risk.table = TRUE,       # show risk table.
+   pval = TRUE,             # show p-value of log-rank test.
+   conf.int = TRUE,         # show confidence intervals for 
+                            # point estimaes of survival curves.
+   xlim = c(0,2000),        # present narrower X axis, but not affect
+                            # survival estimates.
+   break.time.by = 500,     # break X axis in time intervals by 500.
+   ggtheme = theme_RTCGA(), # customize plot and risk table with a theme.
+ risk.table.y.text.col = T, # colour risk table text annotations.
+  risk.table.y.text = FALSE # show bars instead of names in text annotations
+                            # in legend of risk table
+) -> p
+```
+
+Na bazie: [#1](https://github.com/kassambara/survminer/issues/1), [#2](https://github.com/kassambara/survminer/issues/2), [#3](https://github.com/kassambara/survminer/issues/3), [#4](https://github.com/kassambara/survminer/issues/4), [#7](https://github.com/kassambara/survminer/issues/7), [#8](https://github.com/kassambara/survminer/issues/8), [#12](https://github.com/kassambara/survminer/issues/12),
+[#28](https://github.com/kassambara/survminer/issues/28)
+
+## survminer
+
+Co jeszcze potrafi? - wykres
+```{r, echo = FALSE}
+p
+```
+
+
+## survminer
+
+Gdy zależy nam na porządnym wykresie - kod
+
+```{r}
+ggsurv <- ggsurvplot(
+  fit,                     # survfit object with calculated statistics.
+  data = BRCAOV.survInfo,  # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = TRUE,             # show p-value of log-rank test.
+  conf.int = TRUE,         # show confidence intervals
+  xlim = c(0,2000),        # present narrower X axis, but not affect
+                           # survival estimates.
+  xlab = "Time in days",   # customize X axis label.
+  break.time.by = 500,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+ risk.table.y.text.col = T,# colour risk table text annotations.
+ risk.table.height = 0.25, # the height of the risk table
+ risk.table.y.text = FALSE,# show bars instead of names in text annotations
+                           # in legend of risk table.
+ ncensor.plot = TRUE,      # plot the number of censored subjects at time t
+ ncensor.plot.height = 0.25,
+ conf.int.style = "step",  # customize style of confidence intervals
+ surv.median.line = "hv",  # add the median survival pointer.
+ legend.labs = c("BRCA", "OV")) # change legend labels.
+
+```
+
+## survminer
+
+```{r, echo=FALSE, fig.height=10}
+ggpar(ggsurv, palette = c("#E7B800", "#2E9FDF"))
+```
+
+
+## survminer
+<small>
+I mamy dużo czasu - kod
+</small>
+```{r}
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Survival curves",                     
+  subtitle = "Based on Kaplan-Meier estimates",  
+  caption  = "created with survminer")
+ggsurv$table <- ggsurv$table + labs(
+  title    = "Note the risk set sizes",          
+  subtitle = "and remember about censoring.", 
+  caption  = "source code: website.com")
+ggsurv$ncensor.plot <- ggsurv$ncensor.plot + labs( 
+  title    = "Number of censorings", 
+  subtitle = "over the time.",
+  caption  = "source code: website.com"  )
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "darkblue"),         
+  font.subtitle = c(15, "bold.italic", "purple"), 
+  font.caption  = c(14, "plain", "orange"),        
+  font.x        = c(14, "bold.italic", "red"),          
+  font.y        = c(14, "bold.italic", "darkred"),      
+  font.tickslab = c(12, "plain", "darkgreen"),
+  legend = "top")
+```
+
+## survminer
+
+```{r, echo = FALSE, fig.height=9}
+ggpar(ggsurv, palette = c("#E7B800", "#2E9FDF"))
+```
+
+## survminer
+
+<small>
+
+- 'log': log transformation of the survivor function,
+- 'event': plots cumulative events $(f(y) = 1-y)$. It’s also known as the cumulative incidence,
+- 'cumhaz' plots the cumulative hazard function $(f(y) = -log(y))$
+
+</small>
+
+```{r}
+ggsurvplot(fit, fun = "cumhaz")
+```
+
+
+## survminer - wiele zmiennych
+
+```{r}
+fit2 <- survfit(Surv(time, status) ~ sex + rx + adhere,
+                data = colon )
+ggsurv <- ggsurvplot(fit2, fun = "event", conf.int = TRUE,
+                     ggtheme = theme_bw())
+   
+ggsurv$plot + theme_bw() + 
+  theme(legend.position = "right")+
+  facet_grid(rx ~ adhere)
+```
+
+# Dodatkowe funkcjonalności
+
+## Dane
+
+```{r}
+load('BRCA_HNSC.surv_rnaseq.rda')
+# Head and Neck Cancer / Breast Carcinoma
+head(BRCA_HNSC.surv_rnaseq)
+```
+
+
+## surv_cutpoint
+
+<small>
+[Determine optimal cutpoints for numerical variables in survival plots](http://r-addict.com/2016/11/21/Optimal-Cutpoint-maxstat.html)
+
+
+> Kategoryzacja (podział na grupy) zmiennej ciągłej w oparciu o [maxstat(maximally selected rank statistics)](https://cran.r-project.org/web/packages/maxstat/index.html). Winietka pakietu [maxstat, rozdział 2](https://cran.r-project.org/web/packages/maxstat/vignettes/maxstat.pdf).
+</small>
+
+
+```{r}
+BRCA_HNSC.surv_rnaseq.cut <- surv_cutpoint(
+   BRCA_HNSC.surv_rnaseq,
+   time = "times",
+   event = "patient.vital_status",
+   variables = c("ABCD4", "cohort")
+)
+summary(BRCA_HNSC.surv_rnaseq.cut)
+```
+
+
+<small>
+
+> Dlaczego nie kategoryzować zmiennych ciągłych - [Harrel, 2015](http://biostat.mc.vanderbilt.edu/wiki/Main/CatContinuous)
+</small>
+
+## surv_cutpoint - wykres
+
+```{r}
+plot(BRCA_HNSC.surv_rnaseq.cut, "ABCD4", palette = "npg")
+```
+
+
+## surv_categorize
+
+```{r}
+RTCGA::kmTCGA(
+   surv_categorize(BRCA_HNSC.surv_rnaseq.cut), # kategoryzacja
+   explanatory.names = c("ABCD4", "cohort"),
+   pval = TRUE, conf.int = TRUE,
+   xlim = c(0,3000), break.time.by = 500)
+```
+
+# Model Coxa
+
+## Stworzenie modelu
+
+```{r}
+head(lung)
+res.cox <- coxph(
+   Surv(time, status) ~ age + sex + wt.loss,
+   data =  lung
+)
+res.cox
+```
+
+
+## Sprawdzenie założeń
+
+```{r}
+ggcoxzph(cox.zph(res.cox))
+```
+
+## Sprawdzenie formy funkcyjnej zmiennych ciągłych
+
+```{r}
+ggcoxfunctional(
+   Surv(time, status) ~ age + log(age) + sqrt(age),
+   data = lung)
+```
+
+
+## Diagnostyka dopasowania
+
+```{r}
+ggcoxdiagnostics(
+   res.cox, type = "deviance",
+   linear.predictions = FALSE, ggtheme = theme_bw()
+)
+```
+
+## Bazowa funkcja hazardu
+
+```{r}
+ggsurvplot(
+   survfit(res.cox), color = "#2E9FDF",
+   ggtheme = theme_minimal()
+)
+```
+
+## Forest Plot
+
+```{r}
+ggforest(res.cox)
+```
+
+<small>by [Przemyslaw Biecek](github.com/pbiecek/)</small>
+
+
+# Pytania?
+

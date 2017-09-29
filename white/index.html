@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="" />
+  <title>  survminer: wykresy analizy przeżycia   pełne informacji i elegancji</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { font-weight: bold; } /* Keyword */
+code > span.dt { text-decoration: underline; } /* DataType */
+code > span.co { font-style: italic; } /* Comment */
+code > span.al { font-weight: bold; } /* Alert */
+code > span.er { font-weight: bold; } /* Error */
+code > span.wa { font-style: italic; } /* Warning */
+code > span.cf { font-weight: bold; } /* ControlFlow */
+code > span.pp { font-weight: bold; } /* Preprocessor */
+code > span.do { font-style: italic; } /* Documentation */
+code > span.an { font-style: italic; } /* Annotation */
+code > span.cv { font-style: italic; } /* CommentVar */
+code > span.in { font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/theme/night.css" id="theme">
+
+<style type="text/css">
+.reveal section img {
+  background: rgba(255, 255, 255, 0.85);
+}
+</style>
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <link href="index_files/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title"><br><small> <a href="https://github.com/kassambara/survminer">survminer</a>: wykresy analizy przeżycia <br> pełne informacji i elegancji </small></h1>
+  <h1 class="subtitle"><small> <br><a href="http://r-addict.com/About.html">Marcin Kosinski</a> </small></h1>
+    <h2 class="author"><small><a href='https://r-addict.com'><i class='fa fa-comment'></i></a>  <a href='https://stackoverflow.com/users/3857701'><i class='fa fa-stack-overflow'></i></a>  <a href='https://github.com/MarcinKosinski'><i class='fa fa-github'></i></a>  <a href='mailto:m.p.kosinski@gmail.com'><i class='fa fa-envelope-o'></i></a>  </small><br></h2>
+    <h3 class="date">29 Września, 2017 <br> <a href="http://whyr.pl/">Why R? 2017</a></h3>
+</section>
+
+<section><section id="o-mnie" class="titleslide slide level1"><h1>O mnie</h1></section><section id="o-mnie-1" class="slide level2">
+<h1>O mnie</h1>
+<p><a href='https://whyr.pl/'><img src='whyR.jpg' width='200px' height='200px'></a> <a href='https://wser.pl/'><img src='wser.jpg' width='400px' height='200px'></a> <a href='https://r-addict.com/'><img src='avatar.jpg' width='200px' height='200px'></a></p>
+<p><a href="https://whyr.pl/">whyr.pl</a>                         <a href="https://wser.pl/">wser.pl</a>                          <a href="https://r-addict.com/">r-addict.com</a></p>
+</section></section>
+<section><section id="analiza-przezycia" class="titleslide slide level1"><h1>Analiza przeżycia</h1></section><section id="analiza-przezycia-1" class="slide level2">
+<h1>Analiza przeżycia</h1>
+<small>
+<blockquote>
+<p>Analiza przeżycia to zbiór metod statystycznych badających procesy, w których interesujący jest czas, jaki upłynie do (niekoniecznie pierwszego) wystąpienia pewnego zdarzenia.</p>
+</blockquote>
+<p>Przykłady zdarzeń:</p>
+<ul>
+<li>śmierć pacjenta / nawrót choroby,</li>
+<li>awaria urządzenia,</li>
+<li>dezaktywacja usługi (np. telekomunikacyjnej),</li>
+<li>odejście pracownika z firmy,</li>
+<li>wypadek na drodze,</li>
+</ul>
+<p>Typowe narzędzia analizy przeżycia obejmują:</p>
+<ul>
+<li>estymację funkcji przeżycia (np. estymator Kaplana-Meiera)</li>
+<li>estymację funkcji skumulowanego hazardu (np. Nelsona–Aalena)</li>
+<li>modele regresyjne (np. model proporcjonalnego hazardu Coxa)</li>
+</ul>
+<blockquote>
+<p>polecam: <a href="http://mi2.mini.pw.edu.pl:8080/mkosinski/MagisterkaKosinski.pdf">Estymacja w modelu Coxa metodą stochastycznego spadku gradientu z przykładami zastosowań w analizie danych z The Cancer Genome Atlas</a></p>
+</blockquote>
+</small>
+</section><section id="postac-danych" class="slide level2">
+<h1>Postać danych</h1>
+<p><img src='http://what-when-how.com/wp-content/uploads/2011/04/tmp72_thumb1_thumb.png' height='400'> <small> Źródło: <a href="http://what-when-how.com/social-sciences/survival-analysis-regression-social-science/">what-when-how, In Depth Tutorials and Information - SURVIVAL ANALYSIS REGRESSION (Social Science)</a> </small></p>
+</section><section id="jak-potraktowac-takie-dane" class="slide level2">
+<h1>Jak potraktować takie dane ?</h1>
+<p><img src='http://what-when-how.com/wp-content/uploads/2011/04/tmp73_thumb1_thumb.png' height='400'> <small> Źródło: <a href="http://what-when-how.com/social-sciences/survival-analysis-regression-social-science/">what-when-how, In Depth Tutorials and Information - SURVIVAL ANALYSIS REGRESSION (Social Science)</a> </small></p>
+</section><section id="rtcga" class="slide level2">
+<h1><a href="http://rtcga.github.io/RTCGA/">RTCGA</a></h1>
+<small> Na jakich danych popracujemy? </small></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(RTCGA.clinical)
+BRCAOV.survInfo &lt;-<span class="st"> </span><span class="kw">survivalTCGA</span>(
+   BRCA.clinical, OV.clinical,
+   <span class="dt">extract.cols =</span> <span class="st">&quot;admin.disease_code&quot;</span>
+) 
+<span class="kw">head</span>(BRCAOV.survInfo)</code></pre></div>
+<pre><code>  times bcr_patient_barcode patient.vital_status admin.disease_code
+1  3767        TCGA-3C-AAAU                    0               brca
+2  3801        TCGA-3C-AALI                    0               brca
+3  1228        TCGA-3C-AALJ                    0               brca
+4  1217        TCGA-3C-AALK                    0               brca
+5   158        TCGA-4H-AAAK                    0               brca
+6  1477        TCGA-5L-AAT0                    0               brca</code></pre>
+</section><section id="rtcga-1" class="slide level2">
+<h1><a href="http://rtcga.github.io/RTCGA/">RTCGA</a></h1>
+<p><img src='https://raw.githubusercontent.com/RTCGA/RTCGA/master/RTCGA_workflow.png' height='500'></p>
+<small> <a href="http://r-addict.com/2016/05/04/RTCGA-Quick-Guide.html">RTCGA factory of R packages - Quick Guide</a> <br> <a href="http://r-addict.com/2016/07/22/BioC2016-RTCGA.html">BioC 2016 Conference Overview and Few Ways of Downloading TCGA Data</a> </small></p>
+</section></section>
+<section><section id="krzywe-przezycia" class="titleslide slide level1"><h1>Krzywe przeżycia</h1></section><section id="krzywe-przezycia---konstrukcja" class="slide level2">
+<h1>Krzywe przeżycia - konstrukcja</h1>
+<small> Przykład: estymator Kaplana-Meiera</p>
+<p>Funkcja przeżycia: <span class="math inline">\(S(t) = P(T &gt; t)\)</span>, T - zmienna losowa oznaczająca czas zdarzenia </small></p>
+<p><span class="math inline">\(\hat{S}(t)\)</span> - oszacowanie krzywej/funkji przeżycia w chwili <span class="math inline">\(t\)</span></p>
+<p><span class="math display">\[\hat{S}(t) = \prod_{t_i &lt; t} \frac{n_i - d_i}{n_i}\]</span></p>
+<small>
+<ul>
+<li><span class="math inline">\(t_i\)</span> - czas <span class="math inline">\(i\)</span>-tego zdarzenia</li>
+<li><span class="math inline">\(n_i\)</span> - liczba obserwacji w zbiorze ryzyka w chwili <span class="math inline">\(t_i\)</span></li>
+<li><span class="math inline">\(d_i\)</span> - liczba zdarzeń (np. awarii) w chwili <span class="math inline">\(t_i\)</span></li>
+</ul>
+<p>Zakładamy, że <span class="math inline">\(t_i\)</span> są uporządkowane niemalejąco. </small></p>
+</section><section id="krzywe-przezycia---tabela" class="slide level2">
+<h1>Krzywe przeżycia - tabela</h1>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Aml_data_set_sorted_by_survival_time.png" align="left" width='400'> <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Life_table_for_the_aml_data.png" align="right" width='400'></p>
+<p>Źródło: <a href="https://en.wikipedia.org/wiki/Survival_analysis">Wikipedia</a></p>
+</section><section id="krzywe-przezycia---wykresy" class="slide level2">
+<h1>Krzywe przeżycia - wykresy</h1>
+<p>Podstawowe wykresy - pakiet base</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(survival)
+fit &lt;-<span class="st"> </span><span class="kw">survfit</span>(
+   <span class="kw">Surv</span>(times, patient.vital_status) ~<span class="st"> </span>admin.disease_code,
+   <span class="dt">data =</span> BRCAOV.survInfo
+)
+<span class="kw">plot</span>(fit) <span class="co"># base</span></code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="576" /></p>
+</section><section id="krzywe-przezycia-1" class="slide level2">
+<h1>Krzywe przeżycia</h1>
+<small> Sprowadzenie do przydatnej formy wymaga nakładu pracy. </small></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fit, <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;orange&quot;</span>,<span class="st">&quot;purple&quot;</span>),
+     <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">2</span>), <span class="dt">lwd =</span> <span class="dv">3</span>, 
+     <span class="dt">conf.int =</span> <span class="ot">TRUE</span>, <span class="dt">xmax =</span> <span class="dv">2000</span>)
+<span class="co"># add a legend</span>
+<span class="kw">legend</span>(<span class="dv">100</span>, .<span class="dv">3</span>, <span class="kw">c</span>(<span class="st">&quot;Ovarian Cancer&quot;</span>, <span class="st">&quot;Breast Cancer&quot;</span>), 
+       <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">2</span>), <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;orange&quot;</span>,<span class="st">&quot;purple&quot;</span>))</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="576" /></p>
+</section></section>
+<section><section id="survminer" class="titleslide slide level1"><h1>survminer</h1></section><section id="survminer-1" class="slide level2">
+<h1>survminer</h1>
+<small> Autor: <a href="https://github.com/kassambara">Alboukadel Kassambara</a>, Pobrań: 47 tysięcy, na CRAN od 18-01-2016 </small> <img src='http://r-addict.com/images/fulls/survminer_orly.png' height='600'></p>
+</section><section id="survminer-2" class="slide level2">
+<h1>survminer</h1>
+<small> &gt; Gdzie można dowiedzieć się jak pracować z pakietem?</p>
+<p>Wpisy na R-Bloggers:</p>
+<ul>
+<li>M. Kosiński. R-ADDICT January 2017. <a href="http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html">Comparing (Fancy) Survival Curves with Weighted Log-rank Tests</a></li>
+<li>M. Kosiński. R-ADDICT January 2017. <a href="http://r-addict.com/2017/01/15/Too-Far-With-Survival-Plots.html">When You Went too Far with Survival Plots</a></li>
+<li>A. Kassambara. STHDA December 2016. <a href="http://www.sthda.com/english/wiki/survival-analysis-basics">Survival Analysis Basics: Curves and Logrank Tests</a></li>
+<li>A. Kassambara. STHDA December 2016. <a href="http://www.sthda.com/english/wiki/cox-proportional-hazards-model">Cox Proportional Hazards Model</a></li>
+<li>A. Kassambara. STHDA December 2016. <a href="http://www.sthda.com/english/wiki/cox-model-assumptions">Cox Model Assumptions</a></li>
+<li>M. Kosiński. R-ADDICT November 2016. <a href="http://r-addict.com/2016/11/21/Optimal-Cutpoint-maxstat.html">Determine optimal cutpoints for numerical variables in survival plots</a></li>
+<li>M. Kosiński. R-ADDICT May 2016. <a href="http://r-addict.com/2016/05/23/Informative-Survival-Plots.html">Survival plots have never been so informative</a></li>
+<li>A. Kassambara. STHDA January 2016. <a href="http://www.sthda.com/english/wiki/survminer-r-package-survival-data-analysis-and-visualization">survminer R package: Survival Data Analysis and Visualization</a>.</li>
+</ul>
+</small>
+<p><a href="https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/survminer_cheatsheet.pdf">Contributed RStudio Cheatsheets - The survminer package</a> <br> (by <a href="https://github.com/pbiecek/">Przemyslaw Biecek</a>. Updated 03/17.)</p>
+<small> <a href='www.ggplot2-exts.org/gallery/'>www.ggplot2-exts.org/gallery/</a> <br> <a href='www.stdha.com/english/rpkgs/survminer'>www.stdha.com/english/rpkgs/survminer</a> </small></p>
+</section><section id="survminer-3" class="slide level2">
+<h1>survminer</h1>
+<p>Podstawowe wywołanie.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(survminer)
+<span class="kw">ggsurvplot</span>(fit)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="1152" /></p>
+</section><section id="survminer-4" class="slide level2">
+<h1>survminer</h1>
+<p>Tabela zbioru ryzyka.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(fit, <span class="dt">risk.table =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="1152" /></p>
+</section><section id="survminer-5" class="slide level2">
+<h1>survminer</h1>
+<p><a href="http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html#log-rank-statistic-for-2-groups">Testy log-rank (dla 2ch grup)</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(fit, <span class="dt">risk.table =</span> <span class="ot">TRUE</span>, <span class="dt">pval =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="1152" /></p>
+</section><section id="survminer-6" class="slide level2">
+<h1>survminer</h1>
+<p><a href="http://r-addict.com/2017/02/09/Fancy-Survival-Plots.html#weighted-log-rank-extensions">Ważone testy log-rank (dla dwóch grup)</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(fit, <span class="dt">risk.table =</span> <span class="ot">TRUE</span>, <span class="dt">pval =</span> <span class="ot">TRUE</span>,
+           <span class="dt">pval.method =</span> <span class="ot">TRUE</span>,
+           <span class="dt">log.rank.weights =</span> <span class="st">&quot;n&quot;</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="1152" /></p>
+</section><section id="survminer-7" class="slide level2">
+<h1>survminer</h1>
+<p>Intensywność cenzurowań</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(fit, <span class="dt">ncensor.plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="1152" /></p>
+</section><section id="survminer-8" class="slide level2">
+<h1>survminer</h1>
+<p>Co jeszcze potrafi? - kod</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(
+   fit,                     <span class="co"># survfit object with calculated statistics.</span>
+   <span class="dt">risk.table =</span> <span class="ot">TRUE</span>,       <span class="co"># show risk table.</span>
+   <span class="dt">pval =</span> <span class="ot">TRUE</span>,             <span class="co"># show p-value of log-rank test.</span>
+   <span class="dt">conf.int =</span> <span class="ot">TRUE</span>,         <span class="co"># show confidence intervals for </span>
+                            <span class="co"># point estimaes of survival curves.</span>
+   <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">2000</span>),        <span class="co"># present narrower X axis, but not affect</span>
+                            <span class="co"># survival estimates.</span>
+   <span class="dt">break.time.by =</span> <span class="dv">500</span>,     <span class="co"># break X axis in time intervals by 500.</span>
+   <span class="dt">ggtheme =</span> <span class="kw">theme_RTCGA</span>(), <span class="co"># customize plot and risk table with a theme.</span>
+ <span class="dt">risk.table.y.text.col =</span> T, <span class="co"># colour risk table text annotations.</span>
+  <span class="dt">risk.table.y.text =</span> <span class="ot">FALSE</span> <span class="co"># show bars instead of names in text annotations</span>
+                            <span class="co"># in legend of risk table</span>
+) -&gt;<span class="st"> </span>p</code></pre></div>
+<p>Na bazie: <a href="https://github.com/kassambara/survminer/issues/1">#1</a>, <a href="https://github.com/kassambara/survminer/issues/2">#2</a>, <a href="https://github.com/kassambara/survminer/issues/3">#3</a>, <a href="https://github.com/kassambara/survminer/issues/4">#4</a>, <a href="https://github.com/kassambara/survminer/issues/7">#7</a>, <a href="https://github.com/kassambara/survminer/issues/8">#8</a>, <a href="https://github.com/kassambara/survminer/issues/12">#12</a>, <a href="https://github.com/kassambara/survminer/issues/28">#28</a></p>
+</section><section id="survminer-9" class="slide level2">
+<h1>survminer</h1>
+<p>Co jeszcze potrafi? - wykres <img src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="1152" /></p>
+</section><section id="survminer-10" class="slide level2">
+<h1>survminer</h1>
+<p>Gdy zależy nam na porządnym wykresie - kod</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ggsurv &lt;-<span class="st"> </span><span class="kw">ggsurvplot</span>(
+  fit,                     <span class="co"># survfit object with calculated statistics.</span>
+  <span class="dt">data =</span> BRCAOV.survInfo,  <span class="co"># data used to fit survival curves.</span>
+  <span class="dt">risk.table =</span> <span class="ot">TRUE</span>,       <span class="co"># show risk table.</span>
+  <span class="dt">pval =</span> <span class="ot">TRUE</span>,             <span class="co"># show p-value of log-rank test.</span>
+  <span class="dt">conf.int =</span> <span class="ot">TRUE</span>,         <span class="co"># show confidence intervals</span>
+  <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">2000</span>),        <span class="co"># present narrower X axis, but not affect</span>
+                           <span class="co"># survival estimates.</span>
+  <span class="dt">xlab =</span> <span class="st">&quot;Time in days&quot;</span>,   <span class="co"># customize X axis label.</span>
+  <span class="dt">break.time.by =</span> <span class="dv">500</span>,     <span class="co"># break X axis in time intervals by 500.</span>
+  <span class="dt">ggtheme =</span> <span class="kw">theme_light</span>(), <span class="co"># customize plot and risk table with a theme.</span>
+ <span class="dt">risk.table.y.text.col =</span> T,<span class="co"># colour risk table text annotations.</span>
+ <span class="dt">risk.table.height =</span> <span class="fl">0.25</span>, <span class="co"># the height of the risk table</span>
+ <span class="dt">risk.table.y.text =</span> <span class="ot">FALSE</span>,<span class="co"># show bars instead of names in text annotations</span>
+                           <span class="co"># in legend of risk table.</span>
+ <span class="dt">ncensor.plot =</span> <span class="ot">TRUE</span>,      <span class="co"># plot the number of censored subjects at time t</span>
+ <span class="dt">ncensor.plot.height =</span> <span class="fl">0.25</span>,
+ <span class="dt">conf.int.style =</span> <span class="st">&quot;step&quot;</span>,  <span class="co"># customize style of confidence intervals</span>
+ <span class="dt">surv.median.line =</span> <span class="st">&quot;hv&quot;</span>,  <span class="co"># add the median survival pointer.</span>
+ <span class="dt">legend.labs =</span> <span class="kw">c</span>(<span class="st">&quot;BRCA&quot;</span>, <span class="st">&quot;OV&quot;</span>)) <span class="co"># change legend labels.</span></code></pre></div>
+</section><section id="survminer-11" class="slide level2">
+<h1>survminer</h1>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-13-1.png" width="1152" /></p>
+</section><section id="survminer-12" class="slide level2">
+<h1>survminer</h1>
+<small> I mamy dużo czasu - kod </small></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ggsurv$plot &lt;-<span class="st"> </span>ggsurv$plot +<span class="st"> </span><span class="kw">labs</span>(
+  <span class="dt">title    =</span> <span class="st">&quot;Survival curves&quot;</span>,                     
+  <span class="dt">subtitle =</span> <span class="st">&quot;Based on Kaplan-Meier estimates&quot;</span>,  
+  <span class="dt">caption  =</span> <span class="st">&quot;created with survminer&quot;</span>)
+ggsurv$table &lt;-<span class="st"> </span>ggsurv$table +<span class="st"> </span><span class="kw">labs</span>(
+  <span class="dt">title    =</span> <span class="st">&quot;Note the risk set sizes&quot;</span>,          
+  <span class="dt">subtitle =</span> <span class="st">&quot;and remember about censoring.&quot;</span>, 
+  <span class="dt">caption  =</span> <span class="st">&quot;source code: website.com&quot;</span>)
+ggsurv$ncensor.plot &lt;-<span class="st"> </span>ggsurv$ncensor.plot +<span class="st"> </span><span class="kw">labs</span>( 
+  <span class="dt">title    =</span> <span class="st">&quot;Number of censorings&quot;</span>, 
+  <span class="dt">subtitle =</span> <span class="st">&quot;over the time.&quot;</span>,
+  <span class="dt">caption  =</span> <span class="st">&quot;source code: website.com&quot;</span>  )
+ggsurv &lt;-<span class="st"> </span><span class="kw">ggpar</span>(
+  ggsurv,
+  <span class="dt">font.title    =</span> <span class="kw">c</span>(<span class="dv">16</span>, <span class="st">&quot;bold&quot;</span>, <span class="st">&quot;darkblue&quot;</span>),         
+  <span class="dt">font.subtitle =</span> <span class="kw">c</span>(<span class="dv">15</span>, <span class="st">&quot;bold.italic&quot;</span>, <span class="st">&quot;purple&quot;</span>), 
+  <span class="dt">font.caption  =</span> <span class="kw">c</span>(<span class="dv">14</span>, <span class="st">&quot;plain&quot;</span>, <span class="st">&quot;orange&quot;</span>),        
+  <span class="dt">font.x        =</span> <span class="kw">c</span>(<span class="dv">14</span>, <span class="st">&quot;bold.italic&quot;</span>, <span class="st">&quot;red&quot;</span>),          
+  <span class="dt">font.y        =</span> <span class="kw">c</span>(<span class="dv">14</span>, <span class="st">&quot;bold.italic&quot;</span>, <span class="st">&quot;darkred&quot;</span>),      
+  <span class="dt">font.tickslab =</span> <span class="kw">c</span>(<span class="dv">12</span>, <span class="st">&quot;plain&quot;</span>, <span class="st">&quot;darkgreen&quot;</span>),
+  <span class="dt">legend =</span> <span class="st">&quot;top&quot;</span>)</code></pre></div>
+</section><section id="survminer-13" class="slide level2">
+<h1>survminer</h1>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-15-1.png" width="1152" /></p>
+</section><section id="survminer-14" class="slide level2">
+<h1>survminer</h1>
+<small>
+<ul>
+<li>‘log’: log transformation of the survivor function,</li>
+<li>‘event’: plots cumulative events <span class="math inline">\((f(y) = 1-y)\)</span>. It’s also known as the cumulative incidence,</li>
+<li>‘cumhaz’ plots the cumulative hazard function <span class="math inline">\((f(y) = -log(y))\)</span></li>
+</ul>
+</small>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(fit, <span class="dt">fun =</span> <span class="st">&quot;cumhaz&quot;</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-16-1.png" width="1152" /></p>
+</section><section id="survminer---wiele-zmiennych" class="slide level2">
+<h1>survminer - wiele zmiennych</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit2 &lt;-<span class="st"> </span><span class="kw">survfit</span>(<span class="kw">Surv</span>(time, status) ~<span class="st"> </span>sex +<span class="st"> </span>rx +<span class="st"> </span>adhere,
+                <span class="dt">data =</span> colon )
+ggsurv &lt;-<span class="st"> </span><span class="kw">ggsurvplot</span>(fit2, <span class="dt">fun =</span> <span class="st">&quot;event&quot;</span>, <span class="dt">conf.int =</span> <span class="ot">TRUE</span>,
+                     <span class="dt">ggtheme =</span> <span class="kw">theme_bw</span>())
+   
+ggsurv$plot +<span class="st"> </span><span class="kw">theme_bw</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>)+
+<span class="st">  </span><span class="kw">facet_grid</span>(rx ~<span class="st"> </span>adhere)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-17-1.png" width="1152" /></p>
+</section></section>
+<section><section id="dodatkowe-funkcjonalnosci" class="titleslide slide level1"><h1>Dodatkowe funkcjonalności</h1></section><section id="dane" class="slide level2">
+<h1>Dane</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&#39;BRCA_HNSC.surv_rnaseq.rda&#39;</span>)
+<span class="co"># Head and Neck Cancer / Breast Carcinoma</span>
+<span class="kw">head</span>(BRCA_HNSC.surv_rnaseq)</code></pre></div>
+<pre><code>  times bcr_patient_barcode patient.vital_status      cohort    ABCD4
+1  3767        TCGA-3C-AAAU                    0 BRCA.rnaseq 322.2560
+2  3801        TCGA-3C-AALI                    0 BRCA.rnaseq 486.6775
+3  1228        TCGA-3C-AALJ                    0 BRCA.rnaseq 308.2502
+4  1217        TCGA-3C-AALK                    0 BRCA.rnaseq 589.1601
+5   158        TCGA-4H-AAAK                    0 BRCA.rnaseq 615.7447
+6  1477        TCGA-5L-AAT0                    0 BRCA.rnaseq 896.3191</code></pre>
+</section><section id="surv_cutpoint" class="slide level2">
+<h1>surv_cutpoint</h1>
+<small> <a href="http://r-addict.com/2016/11/21/Optimal-Cutpoint-maxstat.html">Determine optimal cutpoints for numerical variables in survival plots</a></p>
+<blockquote>
+<p>Kategoryzacja (podział na grupy) zmiennej ciągłej w oparciu o <a href="https://cran.r-project.org/web/packages/maxstat/index.html">maxstat(maximally selected rank statistics)</a>. Winietka pakietu <a href="https://cran.r-project.org/web/packages/maxstat/vignettes/maxstat.pdf">maxstat, rozdział 2</a>. </small></p>
+</blockquote>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">BRCA_HNSC.surv_rnaseq.cut &lt;-<span class="st"> </span><span class="kw">surv_cutpoint</span>(
+   BRCA_HNSC.surv_rnaseq,
+   <span class="dt">time =</span> <span class="st">&quot;times&quot;</span>,
+   <span class="dt">event =</span> <span class="st">&quot;patient.vital_status&quot;</span>,
+   <span class="dt">variables =</span> <span class="kw">c</span>(<span class="st">&quot;ABCD4&quot;</span>, <span class="st">&quot;cohort&quot;</span>)
+)
+<span class="kw">summary</span>(BRCA_HNSC.surv_rnaseq.cut)</code></pre></div>
+<pre><code>      cutpoint statistic
+ABCD4 468.6417  1.944138</code></pre>
+<small>
+<blockquote>
+<p>Dlaczego nie kategoryzować zmiennych ciągłych - <a href="http://biostat.mc.vanderbilt.edu/wiki/Main/CatContinuous">Harrel, 2015</a> </small></p>
+</blockquote>
+</section><section id="surv_cutpoint---wykres" class="slide level2">
+<h1>surv_cutpoint - wykres</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(BRCA_HNSC.surv_rnaseq.cut, <span class="st">&quot;ABCD4&quot;</span>, <span class="dt">palette =</span> <span class="st">&quot;npg&quot;</span>)</code></pre></div>
+<pre><code>$ABCD4</code></pre>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-20-1.png" width="1152" /></p>
+</section><section id="surv_categorize" class="slide level2">
+<h1>surv_categorize</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">RTCGA::<span class="kw">kmTCGA</span>(
+   <span class="kw">surv_categorize</span>(BRCA_HNSC.surv_rnaseq.cut), <span class="co"># kategoryzacja</span>
+   <span class="dt">explanatory.names =</span> <span class="kw">c</span>(<span class="st">&quot;ABCD4&quot;</span>, <span class="st">&quot;cohort&quot;</span>),
+   <span class="dt">pval =</span> <span class="ot">TRUE</span>, <span class="dt">conf.int =</span> <span class="ot">TRUE</span>,
+   <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">3000</span>), <span class="dt">break.time.by =</span> <span class="dv">500</span>)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-21-1.png" width="1152" /></p>
+</section></section>
+<section><section id="model-coxa" class="titleslide slide level1"><h1>Model Coxa</h1></section><section id="stworzenie-modelu" class="slide level2">
+<h1>Stworzenie modelu</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(lung)</code></pre></div>
+<pre><code>  inst time status age sex ph.ecog ph.karno pat.karno meal.cal wt.loss
+1    3  306      2  74   1       1       90       100     1175      NA
+2    3  455      2  68   1       0       90        90     1225      15
+3    3 1010      1  56   1       0       90        90       NA      15
+4    5  210      2  57   1       1       90        60     1150      11
+5    1  883      2  60   1       0      100        90       NA       0
+6   12 1022      1  74   1       1       50        80      513       0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.cox &lt;-<span class="st"> </span><span class="kw">coxph</span>(
+   <span class="kw">Surv</span>(time, status) ~<span class="st"> </span>age +<span class="st"> </span>sex +<span class="st"> </span>wt.loss,
+   <span class="dt">data =</span>  lung
+)
+res.cox</code></pre></div>
+<pre><code>Call:
+coxph(formula = Surv(time, status) ~ age + sex + wt.loss, data = lung)
+
+            coef exp(coef) se(coef)     z      p
+age      0.02009   1.02029  0.00966  2.08 0.0377
+sex     -0.52103   0.59391  0.17435 -2.99 0.0028
+wt.loss  0.00076   1.00076  0.00619  0.12 0.9024
+
+Likelihood ratio test=14.7  on 3 df, p=0.00212
+n= 214, number of events= 152 
+   (14 observations deleted due to missingness)</code></pre>
+</section><section id="sprawdzenie-zaozen" class="slide level2">
+<h1>Sprawdzenie założeń</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggcoxzph</span>(<span class="kw">cox.zph</span>(res.cox))</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-23-1.png" width="1152" /></p>
+</section><section id="sprawdzenie-formy-funkcyjnej-zmiennych-ciagych" class="slide level2">
+<h1>Sprawdzenie formy funkcyjnej zmiennych ciągłych</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggcoxfunctional</span>(
+   <span class="kw">Surv</span>(time, status) ~<span class="st"> </span>age +<span class="st"> </span><span class="kw">log</span>(age) +<span class="st"> </span><span class="kw">sqrt</span>(age),
+   <span class="dt">data =</span> lung)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-24-1.png" width="1152" /></p>
+</section><section id="diagnostyka-dopasowania" class="slide level2">
+<h1>Diagnostyka dopasowania</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggcoxdiagnostics</span>(
+   res.cox, <span class="dt">type =</span> <span class="st">&quot;deviance&quot;</span>,
+   <span class="dt">linear.predictions =</span> <span class="ot">FALSE</span>, <span class="dt">ggtheme =</span> <span class="kw">theme_bw</span>()
+)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-25-1.png" width="1152" /></p>
+</section><section id="bazowa-funkcja-hazardu" class="slide level2">
+<h1>Bazowa funkcja hazardu</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsurvplot</span>(
+   <span class="kw">survfit</span>(res.cox), <span class="dt">color =</span> <span class="st">&quot;#2E9FDF&quot;</span>,
+   <span class="dt">ggtheme =</span> <span class="kw">theme_minimal</span>()
+)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-26-1.png" width="1152" /></p>
+</section><section id="forest-plot" class="slide level2">
+<h1>Forest Plot</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggforest</span>(res.cox)</code></pre></div>
+<p><img src="index_files/figure-revealjs/unnamed-chunk-27-1.png" width="1152" /></p>
+<small>by <a href="github.com/pbiecek/">Przemyslaw Biecek</a></small></p>
+</section></section>
+<section><section id="pytania" class="titleslide slide level1"><h1>Pytania?</h1></section></section>
+    </div>
+  </div>
+
+  <script src="index_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="index_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Transition style
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
